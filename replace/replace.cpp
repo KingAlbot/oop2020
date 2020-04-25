@@ -64,7 +64,11 @@ int main(int argc, char *argv[])
 	}
 	CopyFileWithReplace(inputFile, outputFile, search, replace);
 	
-	outputFile.flush();
+	if (!outputFile.flush())
+	{
+		std::cout << "Failed to write file\n"; 
+		return 1;
+	}
 
 	return 0;
 }
