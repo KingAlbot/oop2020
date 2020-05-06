@@ -1,66 +1,39 @@
 #!/bin/bash
 
-path_of_tests=tests
-tests=(        # TEST 0
+i=1
+testsPath=tests
+tests=(             
 	'1231234 000'   # TEST 1
 	'ma mama'       # TEST 2
 	'"" empty'      # TEST 3
 	'fox dog'       # TEST 4
 	'Ipsum STRING'  # TEST 5
-	
+        ''              # TEST 6
+        '"hel" "hello"' # TEST 7
+        '"" ""'         # TEST 8
 	)        
-i=1
 
 g++ replace.cpp -o replace
 for te in "${tests[@]}"
 do
 	echo "Test $i:"
-	./replace $path_of_tests/input$i.txt output.txt $te
-	if cmp -s output.txt $path_of_tests/output$i.txt
-	then
-		echo "Passed"
-	else
-		echo "Wrong"
-	fi
-	i=$(($i + 1))
+	./replace $testsPath/input$i.txt output.txt $te > output.txt
+        code="$?"
+        if  [ $code -eq 0 ]
+        then
+	        if cmp -s output.txt $testsPath/output$i.txt
+        	then
+	        	echo "Passed"
+	        else
+		        echo "Wrong output"
+	        fi
+        else
+                echo "Program finished with code $code"
+                if cmp -s output.txt $testsPats/output$i.txt
+                then
+                        echo "Correct error text"
+                else
+                        echo "Invalid error text"
+                fi
+        fi
 done
-
-
-# TEST 
-# no args
-echo "Test $i" 
-./replace > /dev/null
-
-if [ "$?" == "2" ]
-then 
-	echo "Passed"
-else
-	echo "Wrong"
-fi
-i=$(($i + 1))
-
-
-# TEST
-# wrong input 
-echo "Test $i"
-./replace not_exist.txt output.txt some any > /dev/null
-if [ "$?" == "1" ]
-then
-	echo "Passed"
-else
-	echo "Wrong"
-fi
-i=$(($i + 1))
-
-# TEST
-# "" "" 
-echo "Test $i"
-out=$(./replace tests/input$i.txt output$i.txt "" "")
-if [ "$out" == "Search string is empty" ]
-then
-	echo "Passed"
-else
-	echo "Wrong" 
-fi 
-#i=$(($i + 1))
-
